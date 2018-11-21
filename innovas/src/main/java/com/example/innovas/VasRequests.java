@@ -30,7 +30,7 @@ public class VasRequests {
     private static final String CONTENT_TYPE = "application/json";
     private static final String ACCEPT = "application/json";
 
-    private static String CLIENT_SECRET ;
+    private static String CLIENT_SECRET;
     private static Integer applicationId;
     private static String uuid;
 
@@ -94,6 +94,8 @@ public class VasRequests {
                         listener.serverError();
                     } else if (response.code() == 401) {
                         listener.unAuthorization();
+                    } else {
+                        listener.unExpectedError();
                     }
                 }
 
@@ -128,14 +130,14 @@ public class VasRequests {
                 @Override
                 public void onResponse(Call<ResponseOtpRequest> call, Response<ResponseOtpRequest> response) {
                     if (response.isSuccessful()) {
-                        otpListener.onSuccess(response.body().getData().getFailureCode() , response.body().getData().getOtpId());
+                        otpListener.onSuccess(response.body().getData().getFailureCode(), response.body().getData().getOtpId());
                     } else if (response.code() == 400) {
                         otpListener.badRequest();
                     } else if (response.code() == 500) {
                         otpListener.serverError();
                     } else if (response.code() == 401) {
                         otpListener.unAuthorization();
-                    }else {
+                    } else {
                         otpListener.unExpectedError();
                     }
                 }
@@ -156,7 +158,7 @@ public class VasRequests {
         }
     }
 
-    public static void verifyRequest(String msisdn, int otpId, String pin, OtpListener listener) {
+    public static void verifyRequest(String msisdn, int otpId, String pin, final OtpListener listener) {
         otpListener = listener;
         VerifyPostModel verifyPostModel = new VerifyPostModel(uuid, formatPhone(msisdn), otpId, pin);
         try {
@@ -164,13 +166,15 @@ public class VasRequests {
                 @Override
                 public void onResponse(Call<ResponseOtpRequest> call, Response<ResponseOtpRequest> response) {
                     if (response.isSuccessful()) {
-                        otpListener.onSuccess(response.body().getData().getFailureCode() , response.body().getData().getOtpId());
+                        otpListener.onSuccess(response.body().getData().getFailureCode(), response.body().getData().getOtpId());
                     } else if (response.code() == 400) {
                         otpListener.badRequest();
                     } else if (response.code() == 500) {
                         otpListener.serverError();
                     } else if (response.code() == 401) {
                         otpListener.unAuthorization();
+                    }else {
+                        otpListener.unExpectedError();
                     }
                 }
 
@@ -205,6 +209,8 @@ public class VasRequests {
                         listener.serverError();
                     } else if (response.code() == 401) {
                         listener.unAuthorization();
+                    }else {
+                        listener.unExpectedError();
                     }
                 }
 
@@ -224,7 +230,7 @@ public class VasRequests {
         }
     }
 
-    public static void init(int Application_ID, String uuidApplication , String ClientSecret) {
+    public static void init(int Application_ID, String uuidApplication, String ClientSecret) {
         retrofitInterface = ApiUtils.GetRetrofit();
         gson = new Gson();
         applicationId = Application_ID;
